@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Subscriptions.Data;
+using Subscriptions.Domain;
 using Subscriptions.Domain.Services;
 
 namespace Subscriptions.Commands
@@ -25,11 +26,14 @@ namespace Subscriptions.Commands
         public async Task<Unit> Handle(SubscribeRequest request, CancellationToken cancellationToken)
         {
             var customer = await _subscriptionContext.Customers.FindAsync(request.CustomerId);
+            //var customer = new Customer(new Email("customer@example.org"), new CustomerName("Hossam", "Barakat"));
             var product = await _subscriptionContext.Products.FindAsync(request.ProductId);
-            
+
+            if (customer == null || product == null) return Unit.Value;
+
             customer.AddSubscription(product, _subscriptionAmountCalculator);
 
-            await _subscriptionContext.SaveChangesAsync(cancellationToken);
+            var result = await _subscriptionContext.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

@@ -26,7 +26,7 @@ namespace Subscriptions.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetActiveSubscriptions(GetActiveSubscriptionsQuery request)
+        public async Task<IActionResult> GetActiveSubscriptions([FromQuery] GetActiveSubscriptionsQuery request)
         {
             var response = await _mediator.Send(request);
 

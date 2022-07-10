@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Subscriptions.Domain;
 
 namespace Subscriptions.Data
@@ -18,5 +19,28 @@ namespace Subscriptions.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<Subscription> Tags { get; set; }
+
+        private IDbContextTransaction _transaction;
+
+        public void BeginTransaction() {
+            _transaction = Database.BeginTransaction();
+        }
+
+        public void Commit() {
+            try
+            {
+                SaveChanges();
+                _transaction.Commit();
+            }
+            catch (System.Exception)
+            {
+                _transaction.Dispose();
+            }
+        }
+
+        public void Rollback() {
+            _transaction.Rollback();
+            _transaction.Dispose();
+        }
     }
 }

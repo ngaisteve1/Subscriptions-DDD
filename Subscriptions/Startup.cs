@@ -25,6 +25,7 @@ namespace Subscriptions
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSwaggerGen();
             services.AddMediatR(typeof(Startup));
             services.AddScoped<ISubscriptionAmountCalculator, SubscriptionAmountCalculator>();
             services.AddScoped<DomainEventDispatcher>();
@@ -43,6 +44,8 @@ namespace Subscriptions
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();

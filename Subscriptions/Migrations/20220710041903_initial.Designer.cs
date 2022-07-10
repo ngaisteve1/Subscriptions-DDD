@@ -7,19 +7,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Subscriptions.Data;
 
+#nullable disable
+
 namespace Subscriptions.Migrations
 {
     [DbContext(typeof(SubscriptionContext))]
-    [Migration("20201009082706_init")]
-    partial class init
+    [Migration("20220710041903_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseIdentityColumns()
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.0-rc.1.20451.13");
+                .HasAnnotation("ProductVersion", "6.0.6")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("ProductTag", b =>
                 {
@@ -52,7 +55,7 @@ namespace Subscriptions.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customer");
+                    b.ToTable("Customer", (string)null);
                 });
 
             modelBuilder.Entity("Subscriptions.Domain.Product", b =>
@@ -76,7 +79,7 @@ namespace Subscriptions.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Product");
+                    b.ToTable("Product", (string)null);
                 });
 
             modelBuilder.Entity("Subscriptions.Domain.Subscription", b =>
@@ -107,7 +110,7 @@ namespace Subscriptions.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Subscription");
+                    b.ToTable("Subscription", (string)null);
                 });
 
             modelBuilder.Entity("Subscriptions.Domain.Tag", b =>
@@ -122,7 +125,7 @@ namespace Subscriptions.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tag");
+                    b.ToTable("Tag", (string)null);
                 });
 
             modelBuilder.Entity("ProductTag", b =>
