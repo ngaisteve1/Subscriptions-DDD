@@ -7,19 +7,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Subscriptions.Before.Data;
 
+#nullable disable
+
 namespace Subscriptions.Before.Migrations
 {
     [DbContext(typeof(SubscriptionContext))]
-    [Migration("20201009082908_init")]
-    partial class init
+    [Migration("20220711063205_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseIdentityColumns()
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.0-rc.1.20451.13");
+                .HasAnnotation("ProductVersion", "6.0.6")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("Subscriptions.Before.Domain.Customer", b =>
                 {
@@ -47,7 +50,7 @@ namespace Subscriptions.Before.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customer");
+                    b.ToTable("Customer", (string)null);
                 });
 
             modelBuilder.Entity("Subscriptions.Before.Domain.Product", b =>
@@ -71,7 +74,7 @@ namespace Subscriptions.Before.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Product");
+                    b.ToTable("Product", (string)null);
                 });
 
             modelBuilder.Entity("Subscriptions.Before.Domain.Subscription", b =>
@@ -102,7 +105,7 @@ namespace Subscriptions.Before.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Subscription");
+                    b.ToTable("Subscription", (string)null);
                 });
 
             modelBuilder.Entity("Subscriptions.Before.Domain.Subscription", b =>

@@ -17,8 +17,9 @@ namespace Subscriptions.Before.Tests
         [Fact]
         public async Task Should_Add_Subscription_To_Database()
         {
+            // Arrange
             var options = new DbContextOptionsBuilder<SubscriptionContext>()
-                .UseSqlServer("Server=localhost;Database=Subscriptions;uid=sa;pwd=yourStrong(!)Password;")
+                .UseSqlServer("Server=.;Database=Subscriptions;Trusted_Connection=True;")
                 .Options;
             var context = new SubscriptionContext(options);
             await context.Database.EnsureCreatedAsync();
@@ -48,8 +49,11 @@ namespace Subscriptions.Before.Tests
                 CustomerId = customer.Id,
                 ProductId = product.Id
             };
+
+            // Act
             await sut.Handle(subscribeRequest, CancellationToken.None);
 
+            // Assert
             var subscription = await context.Subscriptions
                 .SingleOrDefaultAsync(x=>x.Customer.Id == customer.Id && x.Product.Id == product.Id);
             subscription.ShouldNotBeNull();

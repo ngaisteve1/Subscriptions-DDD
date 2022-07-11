@@ -27,46 +27,55 @@ namespace Subscriptions.Before.Commands
         }
         public async Task<Unit> Handle(SubscribeRequest request, CancellationToken cancellationToken)
         {
-            var customer = await _subscriptionContext
-                .Customers
-                .Include(x=>x.Subscriptions)
-                .FirstAsync(x=> x.Id == request.CustomerId, cancellationToken: cancellationToken);
-            
-            var product = await _subscriptionContext.Products.FindAsync(request.ProductId);
-
-            var subscriptionAmount = product.Amount;
-            if (customer.MoneySpent >= 100)
+            try
             {
-                subscriptionAmount *= 0.8M;
+
+                var customer = await _subscriptionContext
+                                .Customers
+                                .Include(x => x.Subscriptions)
+                                .FirstAsync(x => x.Id == request.CustomerId, cancellationToken: cancellationToken);
+
+                var product = await _subscriptionContext.Products.FindAsync(request.ProductId);
+
+                var subscriptionAmount = product.Amount;
+                if (customer.MoneySpent >= 100)
+                {
+                    subscriptionAmount *= 0.8M;
+                }
+                else if (customer.MoneySpent >= 1000)
+                {
+                    subscriptionAmount *= 0.5M;
+                }
+
+                var currentPeriodEndDate = product.BillingPeriod switch
+                {
+                    BillingPeriod.Weekly => DateTime.UtcNow.AddDays(7),
+                    BillingPeriod.Monthly => DateTime.UtcNow.AddMonths(1),
+                    _ => throw new InvalidOperationException()
+                };
+
+                var subscription = new Subscription
+                {
+                    Id = Guid.NewGuid(),
+                    Customer = customer,
+                    Product = product,
+                    Amount = subscriptionAmount,
+                    Status = SubscriptionStatus.Active,
+                    CurrentPeriodEndDate = currentPeriodEndDate
+                };
+                customer.Subscriptions.Add(subscription);
+                customer.MoneySpent += subscription.Amount;
+
+                await _subscriptionContext.SaveChangesAsync(cancellationToken);
+
+                await _emailSender.SendEmailAsync("Congratulations! You subscribed to a cool product");
+                return Unit.Value;
             }
-            else if (customer.MoneySpent >= 1000)
+            catch (Exception ex)
             {
-                subscriptionAmount *= 0.5M;
+                throw ex;
             }
-
-            var currentPeriodEndDate = product.BillingPeriod switch
-            {
-                BillingPeriod.Weekly => DateTime.UtcNow.AddDays(7),
-                BillingPeriod.Monthly => DateTime.UtcNow.AddMonths(1),
-                _ => throw new InvalidOperationException()
-            };
-
-            var subscription = new Subscription
-            {
-                Id = Guid.NewGuid(),
-                Customer = customer,
-                Product = product,
-                Amount = subscriptionAmount,
-                Status = SubscriptionStatus.Active,
-                CurrentPeriodEndDate = currentPeriodEndDate    
-            };
-            customer.Subscriptions.Add(subscription);
-            customer.MoneySpent += subscription.Amount;
-
-            await _subscriptionContext.SaveChangesAsync(cancellationToken);
             
-            await _emailSender.SendEmailAsync("Congratulations! You subscribed to a cool product");
-            return Unit.Value;
         }
     }
 }

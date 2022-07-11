@@ -31,6 +31,7 @@ namespace Subscriptions.Before
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSwaggerGen();
             services.AddMediatR(typeof(Startup));
             //services.AddScoped<DomainEventDispatcher>();
             services.AddDbContext<SubscriptionContext>( (serviceProvider,options) =>
@@ -46,6 +47,8 @@ namespace Subscriptions.Before
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();
