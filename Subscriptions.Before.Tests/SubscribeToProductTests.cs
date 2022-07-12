@@ -7,6 +7,7 @@ using Shouldly;
 using Subscriptions.Before.Commands;
 using Subscriptions.Before.Data;
 using Subscriptions.Before.Domain;
+using Subscriptions.Before.Domain.Services;
 using Subscriptions.Before.Services;
 using Xunit;
 
@@ -42,7 +43,8 @@ namespace Subscriptions.Before.Tests
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
 
-            var sut = new SubscribeRequestHandler(context, Substitute.For<IEmailSender>());
+            var sut = new SubscribeRequestHandler(context,
+                Substitute.For<IEmailSender>(), new SubscriptionAmountCalculator());
 
             var subscribeRequest = new SubscribeRequest
             {

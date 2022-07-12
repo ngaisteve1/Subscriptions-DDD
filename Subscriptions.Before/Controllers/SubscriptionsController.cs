@@ -9,7 +9,7 @@ namespace Subscriptions.Before.Controllers
     [Route("[controller]")]
     public class SubscriptionsController : ControllerBase
     {
-        private readonly IMediator _mediator;
+        private readonly ISender _mediator;
 
         public SubscriptionsController(IMediator mediator)
         {

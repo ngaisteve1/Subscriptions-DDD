@@ -1,4 +1,5 @@
 using Subscriptions.Before.SharedKernel;
+using System;
 
 namespace Subscriptions.Before.Domain
 {
@@ -9,9 +10,4 @@ namespace Subscriptions.Before.Domain
         public BillingPeriod BillingPeriod { get; set; }
     }
 
-    public enum BillingPeriod
-    {
-        Weekly,
-        Monthly
-    }
 }

@@ -22,8 +22,8 @@ namespace Subscriptions.Before.Data.Config
             builder.Property(p => p.BillingPeriod)
                 .IsRequired()
                 .HasColumnName("BillingPeriod")
-                .HasConversion(new EnumToStringConverter<BillingPeriod>());
-
+               .HasConversion(period => period.Name,
+                    name => BillingPeriod.FromName(name, true));
         }
     }
 }

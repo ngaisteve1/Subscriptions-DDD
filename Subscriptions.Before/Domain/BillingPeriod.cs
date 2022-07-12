@@ -1,7 +1,7 @@
-using System;
 using Ardalis.SmartEnum;
+using System;
 
-namespace Subscriptions.Domain
+namespace Subscriptions.Before.Domain
 {
     public class BillingPeriod : SmartEnum<BillingPeriod>
     {

@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Subscriptions.Before.Data;
 using Subscriptions.Before.Domain;
+using Subscriptions.Before.Domain.Services;
 using Subscriptions.Before.Services;
 
 namespace Subscriptions.Before.Commands
@@ -18,12 +19,14 @@ namespace Subscriptions.Before.Commands
     {
         private readonly SubscriptionContext _subscriptionContext;
         private readonly IEmailSender _emailSender;
+        private readonly ISubscriptionAmountCalculator _subscriptionAmountCalculator;
 
         public SubscribeRequestHandler(SubscriptionContext subscriptionContext,
-            IEmailSender emailSender)
+            IEmailSender emailSender, ISubscriptionAmountCalculator subscriptionAmountCalculator)
         {
             _subscriptionContext = subscriptionContext;
             _emailSender = emailSender;
+            _subscriptionAmountCalculator = subscriptionAmountCalculator;
         }
         public async Task<Unit> Handle(SubscribeRequest request, CancellationToken cancellationToken)
         {
@@ -37,34 +40,7 @@ namespace Subscriptions.Before.Commands
 
                 var product = await _subscriptionContext.Products.FindAsync(request.ProductId);
 
-                var subscriptionAmount = product.Amount;
-                if (customer.MoneySpent >= 100)
-                {
-                    subscriptionAmount *= 0.8M;
-                }
-                else if (customer.MoneySpent >= 1000)
-                {
-                    subscriptionAmount *= 0.5M;
-                }
-
-                var currentPeriodEndDate = product.BillingPeriod switch
-                {
-                    BillingPeriod.Weekly => DateTime.UtcNow.AddDays(7),
-                    BillingPeriod.Monthly => DateTime.UtcNow.AddMonths(1),
-                    _ => throw new InvalidOperationException()
-                };
-
-                var subscription = new Subscription
-                {
-                    Id = Guid.NewGuid(),
-                    Customer = customer,
-                    Product = product,
-                    Amount = subscriptionAmount,
-                    Status = SubscriptionStatus.Active,
-                    CurrentPeriodEndDate = currentPeriodEndDate
-                };
-                customer.Subscriptions.Add(subscription);
-                customer.MoneySpent += subscription.Amount;
+                customer.AddSubscription(product, _subscriptionAmountCalculator);
 
                 await _subscriptionContext.SaveChangesAsync(cancellationToken);
 
@@ -75,7 +51,11 @@ namespace Subscriptions.Before.Commands
             {
                 throw ex;
             }
+
             
+
+
+
         }
     }
 }

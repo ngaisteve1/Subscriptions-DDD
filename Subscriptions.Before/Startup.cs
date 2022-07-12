@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Subscriptions.Before.Data;
+using Subscriptions.Before.Domain.Services;
 using Subscriptions.Before.Infrastructure;
 using Subscriptions.Before.Services;
 
@@ -33,7 +34,7 @@ namespace Subscriptions.Before
             services.AddControllers();
             services.AddSwaggerGen();
             services.AddMediatR(typeof(Startup));
-            //services.AddScoped<DomainEventDispatcher>();
+            services.AddScoped<ISubscriptionAmountCalculator, SubscriptionAmountCalculator>();
             services.AddDbContext<SubscriptionContext>( (serviceProvider,options) =>
                 options
                     //.AddInterceptors(serviceProvider.GetService<DomainEventDispatcher>())
