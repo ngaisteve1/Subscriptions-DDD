@@ -32,18 +32,22 @@ namespace Subscriptions.Before.Commands
         {
             try
             {
-
+                
                 var customer = await _subscriptionContext
                                 .Customers
                                 .Include(x => x.Subscriptions)
-                                .FirstAsync(x => x.Id == request.CustomerId, cancellationToken: cancellationToken);
+                                .FirstOrDefaultAsync(x => x.Id == request.CustomerId, cancellationToken: cancellationToken);
+                // todo: validation - return nocontent if customer is null
 
                 var product = await _subscriptionContext.Products.FindAsync(request.ProductId);
+                // todo: validation - return nocontent if product is null
 
+                // todo: validate - not to add the same subscription to the same customer.
                 customer.AddSubscription(product, _subscriptionAmountCalculator);
 
                 await _subscriptionContext.SaveChangesAsync(cancellationToken);
 
+                // todo: validate - if SaveChangesAsync return is > 0, then only send email.
                 await _emailSender.SendEmailAsync("Congratulations! You subscribed to a cool product");
                 return Unit.Value;
             }

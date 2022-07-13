@@ -5,6 +5,10 @@ using Subscriptions.Domain;
 
 namespace Subscriptions.Data.Config
 {
+    /// <summary>
+    /// This is Fluent Api (Manual configuration). It can be done also using "Conventions" (default option)
+    /// Reference - https://docs.microsoft.com/en-us/ef/core/modeling/relationships?tabs=fluent-api%2Cfluent-api-simple-key%2Csimple-key
+    /// </summary>
     public class SubscriptionConfiguration: IEntityTypeConfiguration<Subscription>
     {
         public void Configure(EntityTypeBuilder<Subscription> builder)

@@ -53,6 +53,7 @@ namespace Subscriptions.Before.Tests
             };
 
             // Act
+
             await sut.Handle(subscribeRequest, CancellationToken.None);
 
             // Assert
