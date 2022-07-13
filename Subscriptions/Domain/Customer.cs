@@ -18,21 +18,21 @@ namespace Subscriptions.Domain
             Id = Guid.NewGuid();
             Email = email ?? throw new ArgumentNullException(nameof(email));
             CustomerName = customerName ?? throw new ArgumentNullException(nameof(customerName));
-            _subscriptions = new List<Subscription>();
+            Subscriptions = new List<Subscription>();
         }
 
         public Email Email { get; private set;}
         public CustomerName CustomerName { get; private set;}
         public decimal MoneySpent { get; private set; }
-        private readonly List<Subscription> _subscriptions;
-        public IReadOnlyCollection<Subscription> Subscriptions => _subscriptions.AsReadOnly();
+        //private readonly List<Subscription> _subscriptions;
+        public List<Subscription> Subscriptions { get; private set; }
 
         public void AddSubscription(Product product, ISubscriptionAmountCalculator subscriptionAmountCalculator)
         {
             var subscriptionAmount = subscriptionAmountCalculator.Calculate(product, this);
 
             var subscription = new Subscription(this, product, subscriptionAmount);
-            _subscriptions.Add(subscription);
+            Subscriptions.Add(subscription);
             MoneySpent += subscription.Amount;
 
             AddDomainEvent(new CustomerSubscribedToProduct
